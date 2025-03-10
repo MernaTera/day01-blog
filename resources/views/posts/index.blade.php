@@ -22,15 +22,20 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                   @foreach($posts as $post)
+
                     <tr>
-                        <td class="px-4 py-2 text-gray-900">{{$post['id']}}</td>
-                        <td class="px-4 py-2 text-gray-700">{{$post['title']}}</td>
-                        <td class="px-4 py-2 text-gray-700">{{$post['posted_by']}}</td>
-                        <td class="px-4 py-2 text-gray-700">{{$post['created_at']}}</td>
+                        <td class="px-4 py-2 text-gray-900">{{$post->id}}</td>
+                        <td class="px-4 py-2 text-gray-700">{{$post->title}}</td>
+                        <td class="px-4 py-2 text-gray-700">{{$post->user->name}}</td>
+                        <td class="px-4 py-2 text-gray-700">{{$post->created_at}}</td>
                         <td class="px-4 py-2 space-x-2">
                             <a href="{{route('posts.show',$post['id'])}}" class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-400 rounded">View</a>
                             <a href="{{route('posts.edit',$post['id'])}}" class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-600 rounded">Edit</a>
-                            <a href="#" class="inline-block px-4 py-1 text-xs font-medium text-white bg-red-600 rounded">Delete</a>
+                            <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirmDelete(event)">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-block px-4 py-1 text-xs font-medium text-white bg-red-600 rounded">Delete</button>
+                            </form>
                         </td>
                     </tr>
                   @endforeach
@@ -41,11 +46,16 @@
 
     <!-- Pagination -->
     <div class="mt-4 flex justify-center space-x-2">
-        <button class="px-3 py-1 border rounded">&lt;</button>
-        <button class="px-3 py-1 border rounded">1</button>
-        <button class="px-3 py-1 border rounded bg-blue-500 text-white">2</button>
-        <button class="px-3 py-1 border rounded">3</button>
-        <button class="px-3 py-1 border rounded">4</button>
-        <button class="px-3 py-1 border rounded">&gt;</button>
+    {{ $posts->links() }}
     </div>
+    <script>
+    function confirmDelete(event) {
+        event.preventDefault(); 
+
+        let confirmAction = confirm("Are you sure you want to delete this post?");
+        if (confirmAction) {
+            event.target.submit();
+        }
+    }
+</script>
 @endsection

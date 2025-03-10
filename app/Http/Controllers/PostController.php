@@ -3,60 +3,75 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Post; // Import the Post model
+use App\Models\Post; 
+use App\Models\User;
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = [
-            ['id' => 1, 'title' => 'Laravel', 'posted_by' => 'Mark', 'created_at' => '2020-01-01'],
-            ['id' => 2, 'title' => 'HTML', 'posted_by' => 'John', 'created_at' => '2020-01-02'],
-            ['id' => 3, 'title' => 'Laravel', 'posted_by' => 'Doe', 'created_at' => '2020-01-03'],
-            ['id' => 4, 'title' => 'HTML', 'posted_by' => 'Jane', 'created_at' => '2020-01-04'],
-            ['id' => 5, 'title' => 'CSS', 'posted_by' => 'Dane', 'created_at' => '2020-01-05']
-        ];
-        return view('posts.index', ['posts' => $posts]);
+        $posts = Post::paginate(7);
+        return view('posts.index', compact('posts'));
     }
 
     public function show($id)
     {
-        $post = [
-            'id' => 1, 
-            'title' => 'Laravel',
-            'Description' => 'This is a Laravel post',
-            'posted_by' => ['name' => 'Mark', 'email' => 'mark@gmail.com', 'created_at' => 'Thursday 25th of December 1975 02:15:16 PM'],
-            'created_at' => '2020-01-01'
-        ];
-        return view('posts.show', ['post' => $post]);
+        $post = Post::find($id);
+        $users = User::all();
+        return view('posts.show', compact('post', 'users'));
     }
 
     public function create()
     {
-        return view('posts.create');
+        $users = User::all();
+        return view('posts.create', ['users' => $users]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        $data = request()->all();
-        return to_route('posts.index');
+        $data = $request->validate([
+            'title' => 'required|string|max:100',
+            'description' => 'required|string',
+            'creator_id' => 'required|exists:users,id'
+        ]);
+
+        $post = Post::create([
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'user_id' => $data['creator_id']
+        ]);
+
+        return redirect()->route('posts.index')->with('success', 'Post created successfully');
     }
 
     public function edit($id)
     {
-        $post = [
-            'id' => 1, 
-            'title' => 'Laravel',
-            'Description' => 'This is a Laravel post',
-            'posted_by' => ['name' => 'Mark', 'email' => 'mark@gmail.com', 'created_at' => 'Thursday 25th of December 1975 02:15:16 PM'],
-            'created_at' => '2020-01-01'
-        ];
-        return view('posts.edit', ['post' => $post]);
+        $post = Post::find($id);
+        $users = User::all();
+        return view('posts.edit', ['post' => $post, 'users' => $users]);
     }
 
     public function update(Request $request, $id)
     {
-        $data = request()->all();
-        return to_route('posts.index');
+        $data = $request->validate([
+            'title' => 'required|string|max:100',
+            'description' => 'required|string',
+            'creator_id' => 'required|exists:users,id'
+        ]);
+
+        $post = Post::findOrFail($id);
+        $post->title = $data['title'];
+        $post->description = $data['description'];
+        $post->user_id = $data['creator_id'];
+        $post->save();
+
+        return redirect()->route('posts.index')->with('success', 'Post updated successfully');
+    }
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully');
     }
 }

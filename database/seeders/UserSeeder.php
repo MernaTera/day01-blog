@@ -7,15 +7,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
-
     public function run(): void
     {
-        $this->call([
-            UserSeeder::class,
-            PostSeeder::class,
-            CommentSeeder::class,
+        DB::table('users')->insert([
+            'name' => Str::random(10),
+            'email' => Str::random(10).'@example.com',
+            'password' => Hash::make('password'),
         ]);
     }
 }

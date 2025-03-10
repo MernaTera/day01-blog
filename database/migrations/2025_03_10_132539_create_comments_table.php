@@ -9,21 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 100);
-            $table->text('description');
+            $table->text('body');
+            $table->morphs('commentable'); // Polymorphic relation (commentable_type, commentable_id)
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('comments');
     }
 };
