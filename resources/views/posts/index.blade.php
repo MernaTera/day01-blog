@@ -29,6 +29,7 @@
                         <td class="px-4 py-2 text-gray-700">{{$post->user->name}}</td>
                         <td class="px-4 py-2 text-gray-700">{{$post->created_at}}</td>
                         <td class="px-4 py-2 space-x-2">
+                            <div class="flex items-center gap-2 mt-6">
                             <a href="{{route('posts.show',$post['id'])}}" class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-400 rounded">View</a>
                             <a href="{{route('posts.edit',$post['id'])}}" class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-600 rounded">Edit</a>
                             <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirmDelete(event)">
@@ -36,6 +37,7 @@
                                 @method('DELETE')
                                 <button type="submit" class="inline-block px-4 py-1 text-xs font-medium text-white bg-red-600 rounded">Delete</button>
                             </form>
+</div>
                         </td>
                     </tr>
                   @endforeach
