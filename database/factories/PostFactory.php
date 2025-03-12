@@ -18,6 +18,7 @@ class PostFactory extends Factory
 
         return [
             'title' => $this->faker->sentence,
+            'slug' => Str::slug($title),
             'description' => $this->faker->paragraph,
             'user_id' => User::factory(), // Selecting random user
             'created_at' => now(),

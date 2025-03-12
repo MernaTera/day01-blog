@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post; 
 use App\Models\User;
+use App\Http\Requests\StorePostRequest;
+use App\Jobs\PruneOldPostsJob;
 
 class PostController extends Controller
 {
@@ -27,19 +29,21 @@ class PostController extends Controller
         return view('posts.create', ['users' => $users]);
     }
 
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:100',
-            'description' => 'required|string',
-            'creator_id' => 'required|exists:users,id'
-        ]);
+        $data = $request->validated();
 
-        $post = Post::create([
+        $post = new Post([
             'title' => $data['title'],
             'description' => $data['description'],
             'user_id' => $data['creator_id']
         ]);
+
+        if ($request->hasFile('image')) {
+            $post->image = $request->file('image');
+        }
+
+        $post->save();
 
         return redirect()->route('posts.index')->with('success', 'Post created successfully');
     }
@@ -51,27 +55,35 @@ class PostController extends Controller
         return view('posts.edit', ['post' => $post, 'users' => $users]);
     }
 
-    public function update(Request $request, $id)
+    public function update(StorePostRequest $request, $id)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:100',
-            'description' => 'required|string',
-            'creator_id' => 'required|exists:users,id'
-        ]);
+        $data = $request->validated();
 
         $post = Post::findOrFail($id);
         $post->title = $data['title'];
         $post->description = $data['description'];
         $post->user_id = $data['creator_id'];
+
+        if ($request->hasFile('image')) {
+            $post->image = $request->file('image');
+        }
+
         $post->save();
 
         return redirect()->route('posts.index')->with('success', 'Post updated successfully');
     }
+
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
         $post->delete();
 
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully');
+    }
+
+    public function pruneOldPosts()
+    {
+        dispatch(new PruneOldPostsJob());
+        return response()->json(['message' => 'Prune job dispatched!']);
     }
 }

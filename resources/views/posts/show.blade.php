@@ -7,16 +7,19 @@
     <div class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded-lg shadow">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Post Info</h2>
         <div class="border-b pb-4 mb-4">
-            <p class="text-lg font-semibold">Title :- <span class="font-normal">{{$post->title}}</span></p>
-            <p class="text-lg font-semibold">Description :- <span class="font-normal">{{$post->description}}</span></p>
+            <p class="text-lg font-semibold">Title :- <span class="font-normal">{{ $post->title }}</span></p>
+            <p class="text-lg font-semibold">Description :- <span class="font-normal">{{ $post->description }}</span></p>
+            @if ($post->image)
+            <img src="{{ Storage::url($post->image) }}" alt="Post Image">
+            @endif
         </div>
     </div>
 
     <div class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded-lg shadow">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Post Creator Info</h2>
-        <p class="text-lg font-semibold">Name :- <span class="font-normal">{{$post->user->name}}</span></p>
-        <p class="text-lg font-semibold">Email :- <span class="font-normal">{{$post->user->email}}</span></p>
-        <p class="text-lg font-semibold">Created At :- <span class="font-normal">{{\Carbon\Carbon::parse($post->created_at)->format('d M Y, h:i A')}}</span></p>
+        <p class="text-lg font-semibold">Name :- <span class="font-normal">{{ $post->user->name }}</span></p>
+        <p class="text-lg font-semibold">Email :- <span class="font-normal">{{ $post->user->email }}</span></p>
+        <p class="text-lg font-semibold">Created At :- <span class="font-normal">{{ \Carbon\Carbon::parse($post->created_at)->format('d M Y, h:i A') }}</span></p>
     </div>
     
     <div class="max-w-3xl mx-auto shadow rounded-lg mt-6">
