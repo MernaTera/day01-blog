@@ -13,7 +13,8 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::paginate(7);
-        return view('posts.index', compact('posts'));
+        $deletedPosts = Post::onlyTrashed()->get();
+        return view('posts.index', compact('posts', 'deletedPosts'));
     }
 
     public function show($id)
@@ -85,5 +86,12 @@ class PostController extends Controller
     {
         dispatch(new PruneOldPostsJob());
         return response()->json(['message' => 'Prune job dispatched!']);
+    }
+    public function restore($id)
+    {
+        $post = Post::withTrashed()->findOrFail($id);
+        $post->restore();
+
+        return redirect()->route('posts.index')->with('success', 'Post restored successfully');
     }
 }

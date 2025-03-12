@@ -17,6 +17,7 @@ Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.de
 Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
 Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 Route::get('/posts/{slug}', [PostController::class, 'show'])->name('posts.show');
+Route::put('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),

@@ -10,10 +10,12 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use App\Jobs\PruneOldPostsJob;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $fillable = ['title','slug', 'description', 'user_id', 'image'];
 
     protected static function boot()
