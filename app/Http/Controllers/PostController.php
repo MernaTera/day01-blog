@@ -12,14 +12,14 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::paginate(7);
+        $posts = Post::with('user')->paginate(7);
         $deletedPosts = Post::onlyTrashed()->get();
         return view('posts.index', compact('posts', 'deletedPosts'));
     }
 
     public function show($id)
     {
-        $post = Post::find($id);
+        $post = Post::with(['user','comments.user'])->find($id);
         $users = User::all();
         return view('posts.show', compact('post', 'users'));
     }
@@ -51,7 +51,7 @@ class PostController extends Controller
 
     public function edit($id)
     {
-        $post = Post::find($id);
+        $post = Post::with('user')->findOrFail($id);
         $users = User::all();
         return view('posts.edit', ['post' => $post, 'users' => $users]);
     }

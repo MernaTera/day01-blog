@@ -82,6 +82,7 @@
         {{ $posts->links() }}
     </div>
 
+
     <script>
         function confirmDelete(event) {
             event.preventDefault(); 
